@@ -30,19 +30,13 @@ It ensures that your uploaded image remains confidential and tamper-proof — al
 ---
 
 ## 🗂️ Project Structure
-ImageShield/
-│
-├── manage.py
-├── imageshield/ # Project configuration (settings, urls, wsgi)
-├── shield_app/ # Core app: views, utils, forms, etc.
-├── templates/
-│ └── shield_app/
-│ └── index.html # Front-end (TailwindCSS UI)
-├── media/
-│ ├── encrypted/ # Encrypted images
-│ └── uploads/ # Decrypted images
-├── requirements.txt
-└── .gitignore
+
+- manage.py
+- imageshield/ → Django settings, URLs, and WSGI
+- shield_app/ → views, forms, utils
+- templates/shield_app/index.html → front-end UI
+- media/encrypted/ → encrypted images
+- media/uploads/ → decrypted images
 
 
 ---
