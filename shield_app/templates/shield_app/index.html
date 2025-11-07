@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ImageShield 🔐 — AES Image Encryption</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0f172a; /* slate-900 */
+      color: #e2e8f0; /* slate-200 */
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .glow {
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+    }
+    .fade-in {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen p-6">
+  <header class="text-center mb-10 fade-in">
+    <h1 class="text-4xl font-bold text-blue-400 tracking-wide">ImageShield 🔐</h1>
+    <p class="text-slate-400 mt-2 text-sm">Secure your images with AES-128 encryption & SHA-256 verification</p>
+  </header>
+
+  {% if messages %}
+    <div class="max-w-2xl mx-auto mb-6">
+      {% for m in messages %}
+        <div class="p-3 rounded-lg text-center {% if m.tags == 'error' %}bg-red-800/50 text-red-200{% elif m.tags == 'success' %}bg-green-800/40 text-green-200{% else %}bg-blue-800/40 text-blue-200{% endif %}">
+          {{ m }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 fade-in">
+
+    <!-- Encryption Card -->
+    <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 glow">
+      <h2 class="text-xl font-semibold text-blue-400 mb-3">Encrypt Image</h2>
+      <form action="{% url 'shield_app:encrypt' %}" method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        {{ encrypt_form.as_p }}
+        <button type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 transition-all py-2 rounded-lg font-semibold tracking-wide">Encrypt</button>
+      </form>
+
+      {% if generated_key %}
+        <div class="bg-slate-900/50 p-4 mt-4 rounded-lg border border-blue-700">
+          <p class="text-sm text-slate-400 mb-1">Generated AES Key:</p>
+          <code class="block font-mono text-blue-300 text-lg select-all">{{ generated_key }}</code>
+          <p class="text-xs text-slate-500 mt-2">Keep this key safe — you'll need it to decrypt.</p>
+        </div>
+      {% endif %}
+
+      {% if encrypted_relpath %}
+        <div class="mt-4 text-sm text-slate-300">
+          <p>Encrypted file:</p>
+          <a class="text-blue-400 hover:underline" href="{{ encrypted_relpath }}" download>
+            {{ encrypted_filename }}
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Decryption Card -->
+    <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 glow">
+      <h2 class="text-xl font-semibold text-blue-400 mb-3">Decrypt Image</h2>
+      <form action="{% url 'shield_app:decrypt' %}" method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        {{ decrypt_form.as_p }}
+        <button type="submit"
+          class="w-full bg-green-600 hover:bg-green-700 transition-all py-2 rounded-lg font-semibold tracking-wide">Decrypt</button>
+      </form>
+
+      {% if decrypted_relpath %}
+        <div class="mt-4">
+          <p class="text-sm text-slate-400">Decrypted Image:</p>
+          <a href="{{ decrypted_relpath }}" download class="text-blue-400 hover:underline">
+            {{ decrypted_filename }}
+          </a>
+          <img src="{{ decrypted_relpath }}" alt="Decrypted Preview"
+               class="rounded-lg mt-3 border border-slate-600 max-h-64 mx-auto shadow-lg">
+        </div>
+      {% endif %}
+    </div>
+
+  </main>
+
+  <footer class="text-center text-xs text-slate-500 mt-12 fade-in">
+    Built with ❤️ using Django & AES Encryption | © 2025 ImageShield
+  </footer>
+</body>
+</html>
